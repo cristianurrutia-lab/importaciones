@@ -62,7 +62,7 @@ def get_importaciones():
         SELECT i.*, p.nombre as proveedor_nombre
         FROM importaciones i
         JOIN proveedores p ON i.proveedor_id = p.id
-        ORDER BY i.creado_en DESC
+        ORDER BY i.id DESC
     """)
     resultado = cursor.fetchall()
     db.close()
