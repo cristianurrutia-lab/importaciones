@@ -1,5 +1,5 @@
 import os
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
 import mysql.connector
  
@@ -204,5 +204,35 @@ def create_pago(id):
 # ================================================
 # INICIAR EL SERVIDOR
 # ================================================
+@app.route('/')
+def index():
+    return render_template('login.html')
+
+@app.route('/pedidos')
+def pedidos():
+    return render_template('pedidos.html')
+
+@app.route('/seguimiento')
+def seguimiento():
+    return render_template('seguimiento.html')
+
+@app.route('/facturas-page')
+def facturas_page():
+    return render_template('facturas.html')
+
+@app.route('/pagos-page')
+def pagos_page():
+    return render_template('pagos.html')
+
+@app.route('/proveedores-page')
+def proveedores_page():
+    return render_template('proveedores.html')
+
+@app.route('/analisis')
+def analisis():
+    return render_template('analisis.html')
+
+
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
