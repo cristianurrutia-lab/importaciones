@@ -210,7 +210,7 @@ def index():
 
 @app.route('/pedidos')
 def pedidos():
-    return render_template('/pedidos')
+    return render_template('pedidos.html')
 
 @app.route('/seguimiento')
 def seguimiento():
