@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Importaciones — Pedidos</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: #f5f4f0; display: flex; flex-direction: column; height: 100vh; }
+
+        /* TOP BAR */
+        .topbar {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 24px; background: #fff;
+            border-bottom: 1px solid #ebebeb; flex-shrink: 0;
+        }
+        .topbar-title { font-size: 14px; font-weight: 600; color: #1a1a1a; }
+        .topbar-user { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #888; }
+        .avatar { width: 30px; height: 30px; border-radius: 50%; background: #f0f0f0; border: 1px solid #e0e0e0; display: flex; align-items: center; justify-content: center; }
+
+        /* LAYOUT */
+        .layout { display: flex; flex: 1; overflow: hidden; }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 200px; background: #fff; border-right: 1px solid #ebebeb;
+            padding: 16px 10px; display: flex; flex-direction: column; gap: 2px; flex-shrink: 0;
+        }
+        .nav-item {
+            display: flex; align-items: center; gap: 10px; padding: 9px 12px;
+            border-radius: 10px; font-size: 13px; color: #666;
+            cursor: pointer; text-decoration: none; transition: background 0.15s;
+        }
+        .nav-item:hover { background: #f5f4f0; color: #1a1a1a; }
+        .nav-item.active { background: #f0efeb; color: #1a1a1a; font-weight: 500; }
+        .nav-item i { font-size: 16px; }
+
+        /* MAIN */
+        .main { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
+
+        .page-header { display: flex; align-items: center; justify-content: space-between; }
+        .page-header h1 { font-size: 18px; font-weight: 600; color: #1a1a1a; }
+        .page-header p { font-size: 13px; color: #888; margin-top: 2px; }
+
+        .btn-primary {
+            display: flex; align-items: center; gap: 6px; padding: 9px 16px;
+            background: #1a1a1a; color: #fff; border: none; border-radius: 10px;
+            font-size: 13px; font-weight: 500; font-family: 'DM Sans', sans-serif;
+            cursor: pointer; transition: background 0.15s;
+        }
+        .btn-primary:hover { background: #333; }
+
+        /* TABLE */
+        .table-card { background: #fff; border-radius: 14px; border: 1px solid #ebebeb; overflow: hidden; }
+        .table-toolbar { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid #f0f0f0; }
+        .search-input {
+            flex: 1; padding: 8px 12px; border: 1px solid #e8e8e8; border-radius: 8px;
+            font-size: 13px; font-family: 'DM Sans', sans-serif; outline: none; background: #fafafa;
+        }
+        .search-input:focus { border-color: #1a1a1a; background: #fff; }
+
+        table { width: 100%; border-collapse: collapse; }
+        thead th { padding: 10px 18px; text-align: left; font-size: 11px; font-weight: 500; color: #999; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #f0f0f0; }
+        tbody tr { border-bottom: 1px solid #f8f8f8; transition: background 0.1s; cursor: pointer; }
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: #fafafa; }
+        tbody td { padding: 12px 18px; font-size: 13px; color: #333; }
+        .td-main { font-weight: 500; color: #1a1a1a; }
+        .td-sub { font-size: 11px; color: #999; margin-top: 1px; }
+
+        .badge {
+            display: inline-block; padding: 3px 8px; border-radius: 6px;
+            font-size: 11px; font-weight: 500;
+        }
+        .badge-blue { background: #e8f4fd; color: #185FA5; }
+        .badge-yellow { background: #fdf6e8; color: #854F0B; }
+        .badge-green { background: #e8fdf0; color: #0F6E56; }
+        .badge-red { background: #fde8e8; color: #993C1D; }
+        .badge-gray { background: #f0f0f0; color: #666; }
+
+        /* MODAL */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.3); z-index: 100;
+            align-items: center; justify-content: center;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: #fff; border-radius: 16px; padding: 28px;
+            width: 100%; max-width: 540px; max-height: 90vh;
+            overflow-y: auto; box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+        }
+        .modal h2 { font-size: 17px; font-weight: 600; color: #1a1a1a; margin-bottom: 20px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        .form-group.full { grid-column: 1 / -1; }
+        .form-group label { font-size: 12px; font-weight: 500; color: #555; }
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 9px 12px; border: 1px solid #e8e8e8; border-radius: 8px;
+            font-size: 13px; font-family: 'DM Sans', sans-serif; outline: none;
+            background: #fafafa; color: #1a1a1a;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: #1a1a1a; background: #fff;
+        }
+        .form-group textarea { resize: vertical; min-height: 70px; }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+        .btn-secondary {
+            padding: 9px 16px; background: #fff; color: #333; border: 1px solid #e0e0e0;
+            border-radius: 10px; font-size: 13px; font-family: 'DM Sans', sans-serif;
+            cursor: pointer; transition: background 0.15s;
+        }
+        .btn-secondary:hover { background: #f5f4f0; }
+
+        .empty-state { text-align: center; padding: 48px; color: #aaa; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+        <span class="topbar-title">Sistema de Importaciones</span>
+        <div class="topbar-user">
+            <span>Usuario 1 — Pedidos</span>
+            <div class="avatar"><i class="ti ti-user" style="font-size:14px;color:#888;"></i></div>
+        </div>
+    </div>
+
+    <div class="layout">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <a class="nav-item active" href="pedidos.html">
+                <i class="ti ti-package"></i> Importaciones
+            </a>
+            <a class="nav-item" href="seguimiento.html">
+                <i class="ti ti-truck"></i> Seguimiento
+            </a>
+            <a class="nav-item" href="facturas.html">
+                <i class="ti ti-file-invoice"></i> Facturas
+            </a>
+            <a class="nav-item" href="pagos.html">
+                <i class="ti ti-credit-card"></i> Pagos
+            </a>
+            <a class="nav-item" href="proveedores.html">
+                <i class="ti ti-building"></i> Proveedores
+            </a>
+            <a class="nav-item" href="analisis.html">
+                <i class="ti ti-chart-bar"></i> Análisis
+            </a>
+        </div>
+
+        <!-- MAIN -->
+        <div class="main">
+            <div class="page-header">
+                <div>
+                    <h1>Importaciones</h1>
+                    <p id="subtitulo">Cargando...</p>
+                </div>
+                <button class="btn-primary" onclick="abrirModal()">
+                    <i class="ti ti-plus"></i> Nuevo pedido
+                </button>
+            </div>
+
+            <div class="table-card">
+                <div class="table-toolbar">
+                    <input class="search-input" type="text" placeholder="Buscar por proveedor o producto..." oninput="filtrar(this.value)">
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Proveedor / Producto</th>
+                            <th>Fecha pedido</th>
+                            <th>Monto</th>
+                            <th>Forwarder</th>
+                            <th>Estado</th>
+                            <th>CDA</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-body">
+                        <tr><td colspan="6" class="empty-state">Cargando importaciones...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL NUEVO PEDIDO -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <h2>Nuevo pedido</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Proveedor</label>
+                    <select id="proveedor_id">
+                        <option value="">Selecciona proveedor</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Fecha de pedido</label>
+                    <input type="date" id="fecha_pedido">
+                </div>
+                <div class="form-group">
+                    <label>Monto</label>
+                    <input type="number" id="monto_pedido" placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label>Moneda</label>
+                    <select id="moneda">
+                        <option value="USD">USD</option>
+                        <option value="EUR">EUR</option>
+                        <option value="CLP">CLP</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>N° Seguimiento</label>
+                    <input type="text" id="numero_seguimiento" placeholder="Ej: MAEU123456">
+                </div>
+                <div class="form-group">
+                    <label>Forwarder</label>
+                    <input type="text" id="forwarder" placeholder="Nombre del forwarder">
+                </div>
+                <div class="form-group">
+                    <label>Producto</label>
+                    <input type="text" id="producto" placeholder="Descripción del producto">
+                </div>
+                <div class="form-group">
+                    <label>Fecha estimada llegada</label>
+                    <input type="date" id="fecha_estimada_llegada">
+                </div>
+                <div class="form-group full">
+                    <label>Comentario</label>
+                    <textarea id="comentario" placeholder="Notas adicionales..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+                <button class="btn-primary" onclick="guardarPedido()">Guardar pedido</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API = 'http://127.0.0.1:5000';
+        let importaciones = [];
+
+        const estadoBadge = {
+            'en_transito': '<span class="badge badge-blue">En tránsito</span>',
+            'en_aduana':   '<span class="badge badge-yellow">En aduana</span>',
+            'recibido':    '<span class="badge badge-green">Recibido</span>',
+            'cancelado':   '<span class="badge badge-red">Cancelado</span>',
+        };
+
+        const cdaBadge = {
+            'pendiente':   '<span class="badge badge-gray">Pendiente</span>',
+            'en_proceso':  '<span class="badge badge-yellow">En proceso</span>',
+            'aprobado':    '<span class="badge badge-green">Aprobado</span>',
+            'rechazado':   '<span class="badge badge-red">Rechazado</span>',
+        };
+
+        async function cargarImportaciones() {
+            try {
+                const res = await fetch(`${API}/importaciones`);
+                importaciones = await res.json();
+                renderTabla(importaciones);
+                document.getElementById('subtitulo').textContent = `${importaciones.length} registros`;
+            } catch(e) {
+                document.getElementById('tabla-body').innerHTML = '<tr><td colspan="6" class="empty-state">Error al conectar con el servidor</td></tr>';
+            }
+        }
+
+        function renderTabla(data) {
+            const tbody = document.getElementById('tabla-body');
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No hay importaciones registradas</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.map(i => `
+                <tr>
+                    <td>
+                        <div class="td-main">${i.proveedor_nombre}</div>
+                        <div class="td-sub">${i.producto || '—'}</div>
+                    </td>
+                    <td>${formatFecha(i.fecha_pedido)}</td>
+                    <td>${i.monto_pedido ? Number(i.monto_pedido).toLocaleString() + ' ' + i.moneda : '—'}</td>
+                    <td>${i.forwarder || '—'}</td>
+                    <td>${estadoBadge[i.estado] || i.estado}</td>
+                    <td>${cdaBadge[i.estado_cda] || i.estado_cda}</td>
+                </tr>
+            `).join('');
+        }
+
+        function filtrar(texto) {
+            const filtradas = importaciones.filter(i =>
+                (i.proveedor_nombre || '').toLowerCase().includes(texto.toLowerCase()) ||
+                (i.producto || '').toLowerCase().includes(texto.toLowerCase())
+            );
+            renderTabla(filtradas);
+        }
+
+        function formatFecha(fecha) {
+            if (!fecha) return '—';
+            return new Date(fecha).toLocaleDateString('es-CL');
+        }
+
+        async function cargarProveedores() {
+            try {
+                const res = await fetch(`${API}/proveedores`);
+                const proveedores = await res.json();
+                const select = document.getElementById('proveedor_id');
+                proveedores.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.id;
+                    opt.textContent = p.nombre;
+                    select.appendChild(opt);
+                });
+            } catch(e) {}
+        }
+
+        function abrirModal() { document.getElementById('modal').classList.add('open'); }
+        function cerrarModal() { document.getElementById('modal').classList.remove('open'); }
+
+        async function guardarPedido() {
+            const data = {
+                proveedor_id: document.getElementById('proveedor_id').value,
+                fecha_pedido: document.getElementById('fecha_pedido').value,
+                monto_pedido: document.getElementById('monto_pedido').value,
+                moneda: document.getElementById('moneda').value,
+                numero_seguimiento: document.getElementById('numero_seguimiento').value,
+                forwarder: document.getElementById('forwarder').value,
+                producto: document.getElementById('producto').value,
+                comentario: document.getElementById('comentario').value,
+                fecha_estimada_llegada: document.getElementById('fecha_estimada_llegada').value,
+            };
+
+            if (!data.proveedor_id || !data.fecha_pedido) {
+                alert('Proveedor y fecha de pedido son obligatorios');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API}/importaciones`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (res.ok) {
+                    cerrarModal();
+                    cargarImportaciones();
+                } else {
+                    alert('Error al guardar el pedido');
+                }
+            } catch(e) {
+                alert('Error al conectar con el servidor');
+            }
+        }
+
+        // Iniciar
+        cargarImportaciones();
+        cargarProveedores();
+    </script>
+</body>
+</html>

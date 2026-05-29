@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Importaciones — Pagos</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: #f5f4f0; display: flex; flex-direction: column; height: 100vh; }
+        .topbar { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; background: #fff; border-bottom: 1px solid #ebebeb; flex-shrink: 0; }
+        .topbar-title { font-size: 14px; font-weight: 600; color: #1a1a1a; }
+        .topbar-user { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #888; }
+        .avatar { width: 30px; height: 30px; border-radius: 50%; background: #f0f0f0; border: 1px solid #e0e0e0; display: flex; align-items: center; justify-content: center; }
+        .layout { display: flex; flex: 1; overflow: hidden; }
+        .sidebar { width: 200px; background: #fff; border-right: 1px solid #ebebeb; padding: 16px 10px; display: flex; flex-direction: column; gap: 2px; flex-shrink: 0; }
+        .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; font-size: 13px; color: #666; cursor: pointer; text-decoration: none; transition: background 0.15s; }
+        .nav-item:hover { background: #f5f4f0; color: #1a1a1a; }
+        .nav-item.active { background: #f0efeb; color: #1a1a1a; font-weight: 500; }
+        .nav-item i { font-size: 16px; }
+        .main { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
+        .page-header { display: flex; align-items: center; justify-content: space-between; }
+        .page-header h1 { font-size: 18px; font-weight: 600; color: #1a1a1a; }
+        .page-header p { font-size: 13px; color: #888; margin-top: 2px; }
+        .btn-primary { display: flex; align-items: center; gap: 6px; padding: 9px 16px; background: #1a1a1a; color: #fff; border: none; border-radius: 10px; font-size: 13px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+        .btn-primary:hover { background: #333; }
+        .btn-sm { padding: 5px 10px; background: #1a1a1a; color: #fff; border: none; border-radius: 7px; font-size: 12px; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+        .btn-sm:hover { background: #333; }
+        .table-card { background: #fff; border-radius: 14px; border: 1px solid #ebebeb; overflow: hidden; }
+        .table-toolbar { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid #f0f0f0; }
+        .search-input { flex: 1; padding: 8px 12px; border: 1px solid #e8e8e8; border-radius: 8px; font-size: 13px; font-family: 'DM Sans', sans-serif; outline: none; background: #fafafa; }
+        .search-input:focus { border-color: #1a1a1a; background: #fff; }
+        table { width: 100%; border-collapse: collapse; }
+        thead th { padding: 10px 18px; text-align: left; font-size: 11px; font-weight: 500; color: #999; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #f0f0f0; }
+        tbody tr { border-bottom: 1px solid #f8f8f8; transition: background 0.1s; }
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: #fafafa; }
+        tbody td { padding: 12px 18px; font-size: 13px; color: #333; }
+        .td-main { font-weight: 500; color: #1a1a1a; }
+        .td-sub { font-size: 11px; color: #999; margin-top: 1px; }
+        .badge { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 500; }
+        .badge-green { background: #e8fdf0; color: #0F6E56; }
+        .badge-yellow { background: #fdf6e8; color: #854F0B; }
+        .badge-blue { background: #e8f4fd; color: #185FA5; }
+        .empty-state { text-align: center; padding: 48px; color: #aaa; font-size: 14px; }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 100; align-items: center; justify-content: center; }
+        .modal-overlay.open { display: flex; }
+        .modal { background: #fff; border-radius: 16px; padding: 28px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 40px rgba(0,0,0,0.12); }
+        .modal h2 { font-size: 17px; font-weight: 600; color: #1a1a1a; margin-bottom: 6px; }
+        .modal-sub { font-size: 13px; color: #888; margin-bottom: 20px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        .form-group.full { grid-column: 1 / -1; }
+        .form-group label { font-size: 12px; font-weight: 500; color: #555; }
+        .form-group input, .form-group select { padding: 9px 12px; border: 1px solid #e8e8e8; border-radius: 8px; font-size: 13px; font-family: 'DM Sans', sans-serif; outline: none; background: #fafafa; color: #1a1a1a; }
+        .form-group input:focus, .form-group select:focus { border-color: #1a1a1a; background: #fff; }
+        .form-group input[readonly] { background: #f0f0f0; color: #888; cursor: not-allowed; }
+        .monto-ref { background: #f8f8f6; border-radius: 10px; padding: 12px 14px; display: none; margin-bottom: 4px; }
+        .monto-ref p { font-size: 11px; color: #888; margin-bottom: 4px; }
+        .monto-ref span { font-size: 18px; font-weight: 600; color: #1a1a1a; }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+        .btn-secondary { padding: 9px 16px; background: #fff; color: #333; border: 1px solid #e0e0e0; border-radius: 10px; font-size: 13px; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+        .btn-secondary:hover { background: #f5f4f0; }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <span class="topbar-title">Sistema de Importaciones</span>
+        <div class="topbar-user">
+            <span>Usuario 4 — Pagos</span>
+            <div class="avatar"><i class="ti ti-user" style="font-size:14px;color:#888;"></i></div>
+        </div>
+    </div>
+    <div class="layout">
+        <div class="sidebar">
+            <a class="nav-item" href="pedidos.html"><i class="ti ti-package"></i> Importaciones</a>
+            <a class="nav-item" href="seguimiento.html"><i class="ti ti-truck"></i> Seguimiento</a>
+            <a class="nav-item" href="facturas.html"><i class="ti ti-file-invoice"></i> Facturas</a>
+            <a class="nav-item active" href="pagos.html"><i class="ti ti-credit-card"></i> Pagos</a>
+            <a class="nav-item" href="proveedores.html"><i class="ti ti-building"></i> Proveedores</a>
+            <a class="nav-item" href="analisis.html"><i class="ti ti-chart-bar"></i> Análisis</a>
+        </div>
+        <div class="main">
+            <div class="page-header">
+                <div>
+                    <h1>Pagos</h1>
+                    <p id="subtitulo">Cargando...</p>
+                </div>
+                <button class="btn-primary" onclick="abrirModal()">
+                    <i class="ti ti-plus"></i> Registrar pago
+                </button>
+            </div>
+            <div class="table-card">
+                <div class="table-toolbar">
+                    <input class="search-input" type="text" placeholder="Buscar por proveedor o tracking..." oninput="filtrar(this.value)">
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Importación</th>
+                            <th>N° Tracking</th>
+                            <th>Monto importación</th>
+                            <th>Monto pagado</th>
+                            <th>Fecha pago</th>
+                            <th>Comprobante</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-body">
+                        <tr><td colspan="7" class="empty-state">Cargando pagos...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL NUEVO PAGO -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <h2>Registrar pago</h2>
+            <p class="modal-sub">Selecciona la importación a pagar</p>
+            <div class="form-grid">
+                <div class="form-group full">
+                    <label>Importación</label>
+                    <select id="importacion_id" onchange="cargarMonto()">
+                        <option value="">Selecciona importación</option>
+                    </select>
+                </div>
+
+                <!-- Monto de referencia -->
+                <div class="form-group full">
+                    <div class="monto-ref" id="monto-ref">
+                        <p>Monto de la importación</p>
+                        <span id="monto-ref-valor">—</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Monto a pagar</label>
+                    <input type="number" id="monto_pagado" placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label>Moneda</label>
+                    <select id="moneda">
+                        <option value="USD">USD</option>
+                        <option value="EUR">EUR</option>
+                        <option value="CLP">CLP</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Fecha de pago</label>
+                    <input type="date" id="fecha_pago">
+                </div>
+                <div class="form-group">
+                    <label>Estado pago</label>
+                    <select id="estado_pago">
+                        <option value="pendiente">Pendiente</option>
+                        <option value="pagado">Pagado</option>
+                        <option value="parcial">Parcial</option>
+                    </select>
+                </div>
+                <div class="form-group full">
+                    <label>N° Comprobante</label>
+                    <input type="text" id="comprobante" placeholder="Ej: TRF-00123">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+                <button class="btn-primary" onclick="guardar()">Guardar pago</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API = 'http://127.0.0.1:5000';
+        let todosPagos = [];
+        let importaciones = [];
+
+        const estadoBadge = {
+            'pagado':    '<span class="badge badge-green">Pagado</span>',
+            'pendiente': '<span class="badge badge-yellow">Pendiente</span>',
+            'parcial':   '<span class="badge badge-blue">Parcial</span>',
+        };
+
+        async function cargarImportaciones() {
+            try {
+                const res = await fetch(`${API}/importaciones`);
+                importaciones = await res.json();
+                const select = document.getElementById('importacion_id');
+                importaciones.forEach(i => {
+                    const opt = document.createElement('option');
+                    opt.value = i.id;
+                    opt.textContent = `${i.proveedor_nombre} — ${i.producto || 'Sin producto'} — ${i.numero_seguimiento || 'Sin tracking'}`;
+                    select.appendChild(opt);
+                });
+            } catch(e) {}
+        }
+
+        function cargarMonto() {
+            const id = document.getElementById('importacion_id').value;
+            const refDiv = document.getElementById('monto-ref');
+            if (!id) { refDiv.style.display = 'none'; return; }
+
+            const importacion = importaciones.find(i => i.id == id);
+            if (!importacion) { refDiv.style.display = 'none'; return; }
+
+            refDiv.style.display = 'block';
+            document.getElementById('monto-ref-valor').textContent =
+                importacion.monto_pedido
+                    ? `${Number(importacion.monto_pedido).toLocaleString()} ${importacion.moneda}`
+                    : 'Sin monto registrado';
+
+            // Precargar moneda
+            if (importacion.moneda) {
+                document.getElementById('moneda').value = importacion.moneda;
+            }
+        }
+
+        async function cargarPagos() {
+            try {
+                todosPagos = [];
+                for (const i of importaciones) {
+                    const res = await fetch(`${API}/importaciones/${i.id}/pagos`);
+                    const pagos = await res.json();
+                    pagos.forEach(p => {
+                        p.importacion_nombre = i.proveedor_nombre;
+                        p.numero_seguimiento = i.numero_seguimiento || '—';
+                        p.monto_importacion = i.monto_pedido;
+                        p.moneda_importacion = i.moneda;
+                        p.importacion_id = i.id;
+                    });
+                    todosPagos = todosPagos.concat(pagos);
+                }
+                renderTabla(todosPagos);
+                document.getElementById('subtitulo').textContent = `${todosPagos.length} pagos registrados`;
+            } catch(e) {
+                document.getElementById('tabla-body').innerHTML = '<tr><td colspan="7" class="empty-state">Error al conectar con el servidor</td></tr>';
+            }
+        }
+
+        function renderTabla(data) {
+            const tbody = document.getElementById('tabla-body');
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No hay pagos registrados</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.map(p => `
+                <tr>
+                    <td><div class="td-main">${p.importacion_nombre}</div></td>
+                    <td>${p.numero_seguimiento}</td>
+                    <td>${p.monto_importacion ? Number(p.monto_importacion).toLocaleString() + ' ' + p.moneda_importacion : '—'}</td>
+                    <td>${p.monto_pagado ? Number(p.monto_pagado).toLocaleString() + ' ' + p.moneda : '—'}</td>
+                    <td>${formatFecha(p.fecha_pago)}</td>
+                    <td>${p.comprobante || '—'}</td>
+                    <td>${estadoBadge[p.estado_pago] || p.estado_pago}</td>
+                </tr>
+            `).join('');
+        }
+
+        function filtrar(texto) {
+            const filtrados = todosPagos.filter(p =>
+                (p.importacion_nombre || '').toLowerCase().includes(texto.toLowerCase()) ||
+                (p.numero_seguimiento || '').toLowerCase().includes(texto.toLowerCase())
+            );
+            renderTabla(filtrados);
+        }
+
+        function formatFecha(fecha) {
+            if (!fecha) return '—';
+            return new Date(fecha).toLocaleDateString('es-CL');
+        }
+
+        function abrirModal() {
+            document.getElementById('modal').classList.add('open');
+            document.getElementById('monto-ref').style.display = 'none';
+        }
+        function cerrarModal() { document.getElementById('modal').classList.remove('open'); }
+
+        async function guardar() {
+            const importacion_id = document.getElementById('importacion_id').value;
+            if (!importacion_id) { alert('Selecciona una importación'); return; }
+            const data = {
+                monto_pagado: document.getElementById('monto_pagado').value,
+                moneda: document.getElementById('moneda').value,
+                fecha_pago: document.getElementById('fecha_pago').value,
+                estado_pago: document.getElementById('estado_pago').value,
+                comprobante: document.getElementById('comprobante').value,
+            };
+            try {
+                const res = await fetch(`${API}/importaciones/${importacion_id}/pagos`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (res.ok) { cerrarModal(); await cargarPagos(); }
+                else { alert('Error al guardar'); }
+            } catch(e) { alert('Error al conectar con el servidor'); }
+        }
+
+        async function init() {
+            await cargarImportaciones();
+            await cargarPagos();
+        }
+        init();
+    </script>
+</body>
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Importaciones — Proveedores</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: #f5f4f0; display: flex; flex-direction: column; height: 100vh; }
+        .topbar { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; background: #fff; border-bottom: 1px solid #ebebeb; flex-shrink: 0; }
+        .topbar-title { font-size: 14px; font-weight: 600; color: #1a1a1a; }
+        .topbar-user { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #888; }
+        .avatar { width: 30px; height: 30px; border-radius: 50%; background: #f0f0f0; border: 1px solid #e0e0e0; display: flex; align-items: center; justify-content: center; }
+        .layout { display: flex; flex: 1; overflow: hidden; }
+        .sidebar { width: 200px; background: #fff; border-right: 1px solid #ebebeb; padding: 16px 10px; display: flex; flex-direction: column; gap: 2px; flex-shrink: 0; }
+        .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; font-size: 13px; color: #666; cursor: pointer; text-decoration: none; transition: background 0.15s; }
+        .nav-item:hover { background: #f5f4f0; color: #1a1a1a; }
+        .nav-item.active { background: #f0efeb; color: #1a1a1a; font-weight: 500; }
+        .nav-item i { font-size: 16px; }
+        .main { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
+        .page-header { display: flex; align-items: center; justify-content: space-between; }
+        .page-header h1 { font-size: 18px; font-weight: 600; color: #1a1a1a; }
+        .page-header p { font-size: 13px; color: #888; margin-top: 2px; }
+        .btn-primary { display: flex; align-items: center; gap: 6px; padding: 9px 16px; background: #1a1a1a; color: #fff; border: none; border-radius: 10px; font-size: 13px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: background 0.15s; }
+        .btn-primary:hover { background: #333; }
+        .table-card { background: #fff; border-radius: 14px; border: 1px solid #ebebeb; overflow: hidden; }
+        .table-toolbar { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid #f0f0f0; }
+        .search-input { flex: 1; padding: 8px 12px; border: 1px solid #e8e8e8; border-radius: 8px; font-size: 13px; font-family: 'DM Sans', sans-serif; outline: none; background: #fafafa; }
+        .search-input:focus { border-color: #1a1a1a; background: #fff; }
+        table { width: 100%; border-collapse: collapse; }
+        thead th { padding: 10px 18px; text-align: left; font-size: 11px; font-weight: 500; color: #999; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #f0f0f0; }
+        tbody tr { border-bottom: 1px solid #f8f8f8; transition: background 0.1s; }
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: #fafafa; }
+        tbody td { padding: 12px 18px; font-size: 13px; color: #333; }
+        .td-main { font-weight: 500; color: #1a1a1a; }
+        .empty-state { text-align: center; padding: 48px; color: #aaa; font-size: 14px; }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 100; align-items: center; justify-content: center; }
+        .modal-overlay.open { display: flex; }
+        .modal { background: #fff; border-radius: 16px; padding: 28px; width: 100%; max-width: 480px; box-shadow: 0 8px 40px rgba(0,0,0,0.12); }
+        .modal h2 { font-size: 17px; font-weight: 600; color: #1a1a1a; margin-bottom: 20px; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+        .form-group label { font-size: 12px; font-weight: 500; color: #555; }
+        .form-group input, .form-group textarea { padding: 9px 12px; border: 1px solid #e8e8e8; border-radius: 8px; font-size: 13px; font-family: 'DM Sans', sans-serif; outline: none; background: #fafafa; color: #1a1a1a; }
+        .form-group input:focus, .form-group textarea:focus { border-color: #1a1a1a; background: #fff; }
+        .form-group textarea { resize: vertical; min-height: 70px; }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+        .btn-secondary { padding: 9px 16px; background: #fff; color: #333; border: 1px solid #e0e0e0; border-radius: 10px; font-size: 13px; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+        .btn-secondary:hover { background: #f5f4f0; }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <span class="topbar-title">Sistema de Importaciones</span>
+        <div class="topbar-user">
+            <span>Proveedores</span>
+            <div class="avatar"><i class="ti ti-user" style="font-size:14px;color:#888;"></i></div>
+        </div>
+    </div>
+    <div class="layout">
+        <div class="sidebar">
+            <a class="nav-item" href="pedidos.html"><i class="ti ti-package"></i> Importaciones</a>
+            <a class="nav-item" href="seguimiento.html"><i class="ti ti-truck"></i> Seguimiento</a>
+            <a class="nav-item" href="facturas.html"><i class="ti ti-file-invoice"></i> Facturas</a>
+            <a class="nav-item" href="pagos.html"><i class="ti ti-credit-card"></i> Pagos</a>
+            <a class="nav-item active" href="proveedores.html"><i class="ti ti-building"></i> Proveedores</a>
+        </div>
+        <div class="main">
+            <div class="page-header">
+                <div>
+                    <h1>Proveedores</h1>
+                    <p id="subtitulo">Cargando...</p>
+                </div>
+                <button class="btn-primary" onclick="abrirModal()">
+                    <i class="ti ti-plus"></i> Nuevo proveedor
+                </button>
+            </div>
+            <div class="table-card">
+                <div class="table-toolbar">
+                    <input class="search-input" type="text" placeholder="Buscar proveedor..." oninput="filtrar(this.value)">
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>País</th>
+                            <th>Contacto</th>
+                            <th>Condiciones de pago</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-body">
+                        <tr><td colspan="4" class="empty-state">Cargando proveedores...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <h2>Nuevo proveedor</h2>
+            <div class="form-group">
+                <label>Nombre</label>
+                <input type="text" id="nombre" placeholder="Nombre del proveedor">
+            </div>
+            <div class="form-group">
+                <label>País</label>
+                <input type="text" id="pais" placeholder="Ej: China, Brasil, USA">
+            </div>
+            <div class="form-group">
+                <label>Contacto</label>
+                <input type="text" id="contacto" placeholder="Email o teléfono">
+            </div>
+            <div class="form-group">
+                <label>Condiciones de pago</label>
+                <textarea id="condiciones_pago" placeholder="Ej: 30 días desde recepción, 50% anticipado..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+                <button class="btn-primary" onclick="guardar()">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API = 'http://127.0.0.1:5000';
+        let proveedores = [];
+
+        async function cargar() {
+            try {
+                const res = await fetch(`${API}/proveedores`);
+                proveedores = await res.json();
+                renderTabla(proveedores);
+                document.getElementById('subtitulo').textContent = `${proveedores.length} proveedores`;
+            } catch(e) {
+                document.getElementById('tabla-body').innerHTML = '<tr><td colspan="4" class="empty-state">Error al conectar con el servidor</td></tr>';
+            }
+        }
+
+        function renderTabla(data) {
+            const tbody = document.getElementById('tabla-body');
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No hay proveedores registrados</td></tr>';
+                return;
+            }
+            tbody.innerHTML = data.map(p => `
+                <tr>
+                    <td><div class="td-main">${p.nombre}</div></td>
+                    <td>${p.pais || '—'}</td>
+                    <td>${p.contacto || '—'}</td>
+                    <td>${p.condiciones_pago || '—'}</td>
+                </tr>
+            `).join('');
+        }
+
+        function filtrar(texto) {
+            const filtrados = proveedores.filter(p =>
+                p.nombre.toLowerCase().includes(texto.toLowerCase())
+            );
+            renderTabla(filtrados);
+        }
+
+        function abrirModal() { document.getElementById('modal').classList.add('open'); }
+        function cerrarModal() { document.getElementById('modal').classList.remove('open'); }
+
+        async function guardar() {
+            const data = {
+                nombre: document.getElementById('nombre').value,
+                pais: document.getElementById('pais').value,
+                contacto: document.getElementById('contacto').value,
+                condiciones_pago: document.getElementById('condiciones_pago').value,
+            };
+            if (!data.nombre) { alert('El nombre es obligatorio'); return; }
+            try {
+                const res = await fetch(`${API}/proveedores`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                if (res.ok) { cerrarModal(); cargar(); }
+                else { alert('Error al guardar'); }
+            } catch(e) { alert('Error al conectar con el servidor'); }
+        }
+
+        cargar();
+    </script>
+</body>
+</html>

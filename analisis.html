@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Importaciones — Análisis</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: #f5f4f0; display: flex; flex-direction: column; height: 100vh; }
+        .topbar { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; background: #fff; border-bottom: 1px solid #ebebeb; flex-shrink: 0; }
+        .topbar-title { font-size: 14px; font-weight: 600; color: #1a1a1a; }
+        .topbar-user { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #888; }
+        .avatar { width: 30px; height: 30px; border-radius: 50%; background: #f0f0f0; border: 1px solid #e0e0e0; display: flex; align-items: center; justify-content: center; }
+        .layout { display: flex; flex: 1; overflow: hidden; }
+        .sidebar { width: 200px; background: #fff; border-right: 1px solid #ebebeb; padding: 16px 10px; display: flex; flex-direction: column; gap: 2px; flex-shrink: 0; }
+        .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; font-size: 13px; color: #666; cursor: pointer; text-decoration: none; transition: background 0.15s; }
+        .nav-item:hover { background: #f5f4f0; color: #1a1a1a; }
+        .nav-item.active { background: #f0efeb; color: #1a1a1a; font-weight: 500; }
+        .nav-item i { font-size: 16px; }
+        .main { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
+        .page-header { display: flex; align-items: center; justify-content: space-between; }
+        .page-header h1 { font-size: 18px; font-weight: 600; color: #1a1a1a; }
+        .page-header p { font-size: 13px; color: #888; margin-top: 2px; }
+        .btn-primary { display: flex; align-items: center; gap: 6px; padding: 9px 16px; background: #1a1a1a; color: #fff; border: none; border-radius: 10px; font-size: 13px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+        .btn-primary:hover { background: #333; }
+        .table-card { background: #fff; border-radius: 14px; border: 1px solid #ebebeb; overflow: hidden; }
+        .table-header { padding: 16px 18px; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; justify-content: space-between; }
+        .table-header h2 { font-size: 14px; font-weight: 600; color: #1a1a1a; }
+        .table-header p { font-size: 12px; color: #888; margin-top: 2px; }
+        table { width: 100%; border-collapse: collapse; }
+        thead th { padding: 10px 18px; text-align: left; font-size: 11px; font-weight: 500; color: #999; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #f0f0f0; }
+        thead th.right { text-align: right; }
+        tbody tr { border-bottom: 1px solid #f8f8f8; transition: background 0.1s; }
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: #fafafa; }
+        tbody td { padding: 12px 18px; font-size: 13px; color: #333; }
+        tbody td.right { text-align: right; }
+        .td-main { font-weight: 500; color: #1a1a1a; }
+        .td-sub { font-size: 11px; color: #999; margin-top: 1px; }
+        .badge { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 500; }
+        .badge-blue { background: #e8f4fd; color: #185FA5; }
+        .total-row td { font-weight: 600; color: #1a1a1a; background: #f8f8f6; border-top: 1px solid #ebebeb; }
+        .empty-state { text-align: center; padding: 48px; color: #aaa; font-size: 14px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .stat-card { background: #fff; border-radius: 12px; border: 1px solid #ebebeb; padding: 16px 20px; }
+        .stat-card .label { font-size: 12px; color: #888; margin-bottom: 6px; }
+        .stat-card .value { font-size: 24px; font-weight: 600; color: #1a1a1a; }
+        .stat-card .sub { font-size: 11px; color: #aaa; margin-top: 2px; }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <span class="topbar-title">Sistema de Importaciones</span>
+        <div class="topbar-user">
+            <span>Análisis</span>
+            <div class="avatar"><i class="ti ti-user" style="font-size:14px;color:#888;"></i></div>
+        </div>
+    </div>
+    <div class="layout">
+        <div class="sidebar">
+            <a class="nav-item" href="pedidos.html"><i class="ti ti-package"></i> Importaciones</a>
+            <a class="nav-item" href="seguimiento.html"><i class="ti ti-truck"></i> Seguimiento</a>
+            <a class="nav-item" href="facturas.html"><i class="ti ti-file-invoice"></i> Facturas</a>
+            <a class="nav-item" href="pagos.html"><i class="ti ti-credit-card"></i> Pagos</a>
+            <a class="nav-item" href="proveedores.html"><i class="ti ti-building"></i> Proveedores</a>
+            <a class="nav-item active" href="analisis.html"><i class="ti ti-chart-bar"></i> Análisis</a>
+        </div>
+        <div class="main">
+            <div class="page-header">
+                <div>
+                    <h1>Análisis</h1>
+                    <p>Resumen de facturas por importación</p>
+                </div>
+                <button class="btn-primary" onclick="exportarExcel()">
+                    <i class="ti ti-download"></i> Exportar a Excel
+                </button>
+            </div>
+
+            <!-- Tarjetas resumen -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="label">Total importaciones</div>
+                    <div class="value" id="stat-importaciones">—</div>
+                    <div class="sub">registradas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Total facturas</div>
+                    <div class="value" id="stat-facturas">—</div>
+                    <div class="sub">emitidas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="label">Monto total facturas</div>
+                    <div class="value" id="stat-monto">—</div>
+                    <div class="sub">en USD</div>
+                </div>
+            </div>
+
+            <!-- Tabla análisis -->
+            <div class="table-card">
+                <div class="table-header">
+                    <div>
+                        <h2>Facturas por N° Tracking</h2>
+                        <p>Total de facturas agrupadas por importación</p>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>N° Tracking</th>
+                            <th>Proveedor</th>
+                            <th>Producto</th>
+                            <th>Estado</th>
+                            <th class="right">N° Facturas</th>
+                            <th class="right">Monto total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-body">
+                        <tr><td colspan="6" class="empty-state">Cargando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API = 'http://127.0.0.1:5000';
+        let datosAnalisis = [];
+
+        const estadoLabel = {
+            'en_transito': 'En tránsito',
+            'en_aduana': 'En aduana',
+            'recibido': 'Recibido',
+            'cancelado': 'Cancelado',
+        };
+
+        async function cargar() {
+            try {
+                const res = await fetch(`${API}/importaciones`);
+                const importaciones = await res.json();
+
+                document.getElementById('stat-importaciones').textContent = importaciones.length;
+
+                datosAnalisis = [];
+                let totalFacturas = 0;
+                let totalMonto = 0;
+
+                for (const i of importaciones) {
+                    const resF = await fetch(`${API}/importaciones/${i.id}/facturas`);
+                    const facturas = await resF.json();
+                    const montoTotal = facturas.reduce((sum, f) => sum + (parseFloat(f.monto) || 0), 0);
+
+                    totalFacturas += facturas.length;
+                    totalMonto += montoTotal;
+
+                    datosAnalisis.push({
+                        tracking: i.numero_seguimiento || '—',
+                        proveedor: i.proveedor_nombre,
+                        producto: i.producto || '—',
+                        estado: estadoLabel[i.estado] || i.estado,
+                        nFacturas: facturas.length,
+                        montoTotal: montoTotal,
+                        moneda: i.moneda || 'USD'
+                    });
+                }
+
+                document.getElementById('stat-facturas').textContent = totalFacturas;
+                document.getElementById('stat-monto').textContent = totalMonto.toLocaleString('es-CL', {minimumFractionDigits: 2});
+
+                renderTabla(datosAnalisis);
+            } catch(e) {
+                document.getElementById('tabla-body').innerHTML = '<tr><td colspan="6" class="empty-state">Error al conectar con el servidor</td></tr>';
+            }
+        }
+
+        function renderTabla(data) {
+            const tbody = document.getElementById('tabla-body');
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No hay datos disponibles</td></tr>';
+                return;
+            }
+
+            const filas = data.map(d => `
+                <tr>
+                    <td><div class="td-main">${d.tracking}</div></td>
+                    <td>${d.proveedor}</td>
+                    <td>${d.producto}</td>
+                    <td><span class="badge badge-blue">${d.estado}</span></td>
+                    <td class="right">${d.nFacturas}</td>
+                    <td class="right">${d.montoTotal.toLocaleString('es-CL', {minimumFractionDigits: 2})} ${d.moneda}</td>
+                </tr>
+            `).join('');
+
+            const totalMonto = data.reduce((sum, d) => sum + d.montoTotal, 0);
+            const totalFacturas = data.reduce((sum, d) => sum + d.nFacturas, 0);
+
+            const filaTotal = `
+                <tr class="total-row">
+                    <td colspan="4">Total</td>
+                    <td class="right">${totalFacturas}</td>
+                    <td class="right">${totalMonto.toLocaleString('es-CL', {minimumFractionDigits: 2})}</td>
+                </tr>
+            `;
+
+            tbody.innerHTML = filas + filaTotal;
+        }
+
+        function exportarExcel() {
+            if (datosAnalisis.length === 0) { alert('No hay datos para exportar'); return; }
+
+            const datos = datosAnalisis.map(d => ({
+                'N° Tracking': d.tracking,
+                'Proveedor': d.proveedor,
+                'Producto': d.producto,
+                'Estado': d.estado,
+                'N° Facturas': d.nFacturas,
+                'Monto Total': d.montoTotal,
+                'Moneda': d.moneda
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(datos);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Análisis');
+
+            const fecha = new Date().toLocaleDateString('es-CL').replace(/\//g, '-');
+            XLSX.writeFile(wb, `analisis_importaciones_${fecha}.xlsx`);
+        }
+
+        cargar();
+    </script>
+</body>
+</html>
